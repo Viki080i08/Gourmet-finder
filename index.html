@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-MPL9VKSB');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gourmet Finder - Votre Guide Gastronomique Mondial</title>
@@ -82,6 +87,8 @@
 </head>
 <body class="bg-slate-900 text-white antialiased">
 
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MPL9VKSB"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="container mx-auto px-4 py-8 min-h-screen">
         <header class="text-center mb-8 relative">
             <h1 class="text-4xl md:text-5xl font-extrabold gradient-text">Gourmet Finder</h1>
@@ -273,7 +280,7 @@
             const specificSearch = specificSearchInput.value.trim();
             const sortOrder = sortSelect.value;
             const activeTags = Array.from(tagFiltersContainer.querySelectorAll('[data-active="true"]'))
-                                     .map(btn => btn.dataset.value);
+                                         .map(btn => btn.dataset.value);
 
             let userQuery = `Trouve les 6 meilleurs restaurants ou boutiques alimentaires à "${city}".`;
             if (specificSearch) {
@@ -409,138 +416,121 @@
         openAboutModalBtn.addEventListener('click', () => {
             aboutModal.classList.remove('hidden');
             aboutModal.classList.add('flex', 'modal-enter');
+            aboutModal.classList.remove('modal-leave');
         });
-        const closeAboutModal = () => {
+
+        closeAboutModalBtn.addEventListener('click', () => {
             aboutModal.classList.add('modal-leave');
             aboutModal.classList.remove('modal-enter');
             setTimeout(() => {
                 aboutModal.classList.add('hidden');
                 aboutModal.classList.remove('flex');
             }, 300);
-        };
-        closeAboutModalBtn.addEventListener('click', closeAboutModal);
-        aboutModal.addEventListener('click', (e) => {
-            if (e.target === aboutModal) { closeAboutModal(); }
         });
 
-        // --- Reviews Logic ---
-        const createStars = (rating) => {
-            let stars = '';
-            for (let i = 0; i < 5; i++) {
-                stars += i < rating ? '★' : '☆';
+        aboutModal.addEventListener('click', (e) => {
+            if (e.target === aboutModal) {
+                aboutModal.classList.add('modal-leave');
+                aboutModal.classList.remove('modal-enter');
+                setTimeout(() => {
+                    aboutModal.classList.add('hidden');
+                    aboutModal.classList.remove('flex');
+                }, 300);
             }
-            return stars;
-        };
+        });
+
+        // --- Review Form Logic (Basic) ---
         reviewForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const reviewerName = document.getElementById('reviewer-name').value;
-            const placeName = document.getElementById('place-name').value;
+            const name = document.getElementById('reviewer-name').value;
+            const place = document.getElementById('place-name').value;
+            const rating = reviewForm.querySelector('input[name="rating"]:checked').value;
             const reviewText = document.getElementById('review-text').value;
-            const ratingValue = document.querySelector('input[name="rating"]:checked');
 
-            if (!ratingValue) {
-                alert("Veuillez donner une note.");
-                return;
-            }
-
-            const rating = parseInt(ratingValue.value);
-
+            // Simple display of the new review (not stored permanently as this is frontend code)
             const newReviewHTML = `
                 <div class="bg-slate-900 p-6 rounded-xl">
                     <div class="flex items-start justify-between mb-2">
                         <div>
-                            <p class="font-bold text-lg">${reviewerName}</p>
-                            <p class="text-sm text-slate-400">sur "${placeName}"</p>
+                            <p class="font-bold text-lg">${name}</p>
+                            <p class="text-sm text-slate-400">sur "${place}"</p>
                         </div>
-                        <div class="text-yellow-400 text-xl">${createStars(rating)}</div>
+                        <div class="text-yellow-400 text-xl">${'★'.repeat(parseInt(rating))}</div>
                     </div>
                     <p class="text-slate-300 mb-4">${reviewText}</p>
                     <div class="text-right"><button class="reply-btn text-sm text-blue-400 hover:underline">Répondre</button></div>
                     <div class="reply-section hidden mt-4 pl-6 border-l-2 border-slate-700"></div>
                 </div>
             `;
-
             reviewsList.insertAdjacentHTML('afterbegin', newReviewHTML);
             reviewForm.reset();
+            alert("Avis soumis (note: l'avis n'est pas sauvegardé de manière permanente).");
         });
 
-        // --- Chatbot Logic ---
+        // --- Chatbot Logic (Simplified) ---
+        let chatHistory = [{ role: 'model', parts: [{ text: 'Bonjour ! Demandez-moi une recette ou posez-moi une question culinaire.' }] }];
+
         chatbotToggle.addEventListener('click', () => {
-            const isHidden = chatbotWindow.classList.contains('hidden');
-            if (isHidden) {
-                chatbotWindow.classList.remove('hidden');
-                chatbotWindow.classList.add('flex', 'modal-enter');
-                chatbotWindow.classList.remove('modal-leave');
-            } else {
-                chatbotWindow.classList.add('modal-leave');
-                chatbotWindow.classList.remove('modal-enter');
-                setTimeout(() => {
-                    chatbotWindow.classList.add('hidden');
-                    chatbotWindow.classList.remove('flex');
-                }, 300);
-            }
+            chatbotWindow.classList.toggle('hidden');
         });
 
         chatbotClose.addEventListener('click', () => {
-            chatbotWindow.classList.add('modal-leave');
-            chatbotWindow.classList.remove('modal-enter');
-            setTimeout(() => {
-                chatbotWindow.classList.add('hidden');
-                chatbotWindow.classList.remove('flex');
-            }, 300);
+            chatbotWindow.classList.add('hidden');
         });
 
-        chatForm.addEventListener('submit', handleChatSubmit);
-
-        async function handleChatSubmit(e) {
+        chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const userMessage = chatInput.value.trim();
-
+            chatInput.value = '';
             if (!userMessage) return;
 
             // 1. Display user message
             appendMessage(userMessage, 'user');
-            chatInput.value = '';
-            chatLoader.style.display = 'flex';
-            scrollToBottom();
 
-            // 2. Call Gemini API
-            const chatSystemPrompt = "Tu es un assistant culinaire expert. Réponds aux questions sur les recettes, les accords mets-vins, l'histoire des plats, et les conseils de cuisine. Utilise un ton amical et informatif. Utilise ton outil de recherche pour répondre avec des informations actuelles et précises.";
+            // 2. Add to history
+            chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+
+            // 3. Show loader and prepare for API call
+            chatLoader.classList.remove('hidden');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const chatSystemPrompt = `Tu es un assistant culinaire nommé "Assistant Gourmet". Réponds de manière chaleureuse, précise et utile. Utilise l'outil de recherche Google pour trouver des informations de manière dynamique pour répondre aux requêtes de recettes, d'accords mets-vins, ou de faits culinaires.`;
 
             try {
+                // The API call logic for a chat is more complex than a simple prompt due to history
+                // We'll use a simplified call for this demo, focusing on the last message for now.
+                // A true chat would require sending the full chatHistory in the API request.
                 const responseText = await callGeminiAPI(chatSystemPrompt, userMessage);
+                
+                // 4. Display Gemini response
                 appendMessage(responseText, 'gemini');
+
+                // 5. Update history (ideally, with the full response)
+                chatHistory.push({ role: 'model', parts: [{ text: responseText }] });
+
             } catch (error) {
-                appendMessage("Désolé, je rencontre des difficultés techniques pour le moment. Veuillez réessayer plus tard.", 'gemini');
+                appendMessage("Désolé, je n'ai pas pu vous répondre. Erreur de connexion ou de l'API.", 'gemini');
+                console.error("Chatbot Error:", error);
             } finally {
-                chatLoader.style.display = 'none';
-                scrollToBottom();
+                // 6. Hide loader and scroll
+                chatLoader.classList.add('hidden');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-        }
+        });
 
         function appendMessage(text, sender) {
             const messageElement = document.createElement('div');
-            messageElement.className = `p-3 rounded-xl max-w-[85%] whitespace-pre-wrap ${sender === 'user' ? 'chat-bubble-user rounded-br-none' : 'chat-bubble-gemini rounded-tl-none'}`;
-            
-            // Format markdown text (simple implementation)
-            let htmlText = text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // **bold**
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')          // *italic*
-                .replace(/^- (.*)/gm, '<li>$1</li>')          // - list
-                .replace(/^(<li>.*<\/li>)$/ms, '<ul>$1</ul>'); // wrap lists in ul
-
-            messageElement.innerHTML = htmlText;
+            messageElement.className = `chat-bubble-${sender} p-3 rounded-lg max-w-xs whitespace-pre-wrap`;
+            messageElement.textContent = text;
             chatMessages.appendChild(messageElement);
         }
 
-        function scrollToBottom() {
+        // --- Initialization ---
+        // Force scroll down on load for the initial chat message
+        window.addEventListener('load', () => {
             chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Initial check for hash for direct link to modal
-        if (window.location.hash === '#reviews') {
-            openAboutModalBtn.click();
-        }
+        });
+        
     </script>
 </body>
 </html>
