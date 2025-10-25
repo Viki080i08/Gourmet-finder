@@ -12,6 +12,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gourmet Finder - Votre Guide Gastronomique Mondial</title>
+
+    <script async custom-element="amp-auto-ads"
+      src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,6 +95,10 @@
 </head>
 <body class="bg-slate-900 text-white antialiased">
 
+    <amp-auto-ads type="adsense"
+        data-ad-client="ca-pub-6536893719603715">
+    </amp-auto-ads>
+    
     <div class="container mx-auto px-4 py-8 min-h-screen">
         <header class="text-center mb-8 relative">
             <h1 class="text-4xl md:text-5xl font-extrabold gradient-text">Gourmet Finder</h1>
@@ -99,16 +108,6 @@
             </button>
         </header>
 
-        <div class="max-w-7xl mx-auto mb-8 p-4 bg-slate-800 rounded-lg text-center">
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-format="autorelaxed"
-                data-ad-client="ca-pub-6536893719603715"
-                data-ad-slot="7394412505"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
         <div class="sticky top-0 z-20 bg-slate-900/80 backdrop-blur-lg py-4 mb-4">
             <form id="search-form" class="max-w-3xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="text" id="city-input" placeholder="Ville ou Région (ex: Paris)" class="w-full bg-slate-800 border border-slate-700 rounded-lg py-2.5 px-4 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:outline-none">
